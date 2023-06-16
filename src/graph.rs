@@ -4,6 +4,17 @@ graph algorithms
 mod graph {
     use rand::{Rng, thread_rng, seq::SliceRandom};
 
+    const moves: Vec<(i32,i32)> = vec![
+        (-1, -1), // up left
+        (-1, 0), // up
+        (-1, 1), // up right
+        (0, -1), // left
+        (0, 1), // right
+        (1, -1), // down left
+        (1, 0), // down
+        (1, 1), // down right
+    ];
+
     fn generate_valid_grid(w: i32, h: i32) -> Vec<Vec<i32>> {
         let mut rng = rand::thread_rng();
         // 2d array of random 0s and 1s
@@ -31,16 +42,6 @@ mod graph {
         // set valid start and end
         grid[start.0 as usize][start.1 as usize] = 0;
         grid[end.0 as usize][end.1 as usize] = 0;
-        let mut moves: Vec<(i32,i32)> = vec![
-            (-1, -1), // up left
-            (-1, 0), // up
-            (-1, 1), // up right
-            (0, -1), // left
-            (0, 1), // right
-            (1, -1), // down left
-            (1, 0), // down
-            (1, 1), // down right
-        ];
 
         let mut rng = thread_rng();
         let mut current: (i32, i32) = start;
@@ -87,6 +88,58 @@ mod graph {
         let h = grid.len() as i32;
         let w = grid[0].len() as i32;
         next.0 >= 0 && next.0 < h && next.1 >= 0 && next.1 < w
+    }
+
+    mod traversals {
+        /*
+        TODO: implement bfs, dfs, dijkstra, a*
+        write the algorithms and make sure they are both tested and benchmarked
+            and able to 
+         */
+
+        use std::collections::{VecDeque, HashSet};
+
+        use super::{is_obsticle, is_in_bounds, moves};
+
+        fn bfs(grid: &Vec<Vec<i32>>) {
+
+        }
+
+        fn dfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
+            let rows = grid.len();
+            let cols = grid[0].len();
+            let mut q = VecDeque::new();
+            let mut visited: HashSet<(i32, i32)> = HashSet::new();
+
+            q.push_back(start);
+            visited.insert(start);
+            while !q.is_empty() {
+                let curr = q.pop_front().unwrap();
+                // we have reached the end
+                if curr == end {
+                    return true;
+                }
+                let (x, y) = (curr.0, curr.1);
+                for (x_curr, y_curr) in &moves {
+                    let next: (i32, i32) = (x + x_curr, y + y_curr);
+                    if is_in_bounds(grid, next) && !visited.contains(&next) && !is_obsticle(grid, next) {
+                        q.push_back(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            // unable to reach the end
+            false
+        }
+
+        fn dijkstra(grid: &Vec<Vec<i32>>) {
+
+        }
+
+        fn a_star(grid: &Vec<Vec<i32>>) {
+
+        }
+
     }
 
     #[cfg(test)]
