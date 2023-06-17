@@ -1,19 +1,8 @@
 /*
 graph algorithms
  */
-mod graph {
+pub mod graph {
     use rand::{Rng, thread_rng, seq::SliceRandom};
-
-    const moves: Vec<(i32,i32)> = vec![
-        (-1, -1), // up left
-        (-1, 0), // up
-        (-1, 1), // up right
-        (0, -1), // left
-        (0, 1), // right
-        (1, -1), // down left
-        (1, 0), // down
-        (1, 1), // down right
-    ];
 
     fn generate_valid_grid(w: i32, h: i32) -> Vec<Vec<i32>> {
         let mut rng = rand::thread_rng();
@@ -43,6 +32,7 @@ mod graph {
         grid[start.0 as usize][start.1 as usize] = 0;
         grid[end.0 as usize][end.1 as usize] = 0;
 
+        let mut moves = moves();
         let mut rng = thread_rng();
         let mut current: (i32, i32) = start;
         /*
@@ -90,7 +80,21 @@ mod graph {
         next.0 >= 0 && next.0 < h && next.1 >= 0 && next.1 < w
     }
 
-    mod traversals {
+    fn moves() -> Vec<(i32, i32)> {
+        let moves: Vec<(i32,i32)> = vec![
+            (-1, -1), // up left
+            (-1, 0), // up
+            (-1, 1), // up right
+            (0, -1), // left
+            (0, 1), // right
+            (1, -1), // down left
+            (1, 0), // down
+            (1, 1), // down right
+        ];
+        moves
+    }
+
+    pub mod traversals {
         /*
         TODO: implement bfs, dfs, dijkstra, a*
         write the algorithms and make sure they are both tested and benchmarked
@@ -101,14 +105,9 @@ mod graph {
 
         use super::{is_obsticle, is_in_bounds, moves};
 
-        fn bfs(grid: &Vec<Vec<i32>>) {
-
-        }
-
-        fn dfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
-            let rows = grid.len();
-            let cols = grid[0].len();
-            let mut q = VecDeque::new();
+        pub fn bfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
+            let moves = moves();
+            let mut q = VecDeque::new(); // queue
             let mut visited: HashSet<(i32, i32)> = HashSet::new();
 
             q.push_back(start);
@@ -117,7 +116,7 @@ mod graph {
                 let curr = q.pop_front().unwrap();
                 // we have reached the end
                 if curr == end {
-                    return true;
+                    true;
                 }
                 let (x, y) = (curr.0, curr.1);
                 for (x_curr, y_curr) in &moves {
@@ -130,13 +129,38 @@ mod graph {
             }
             // unable to reach the end
             false
-        }
-
-        fn dijkstra(grid: &Vec<Vec<i32>>) {
 
         }
 
-        fn a_star(grid: &Vec<Vec<i32>>) {
+        pub fn dfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
+            let moves = moves();
+            let mut stack = Vec::new(); //stack
+            let mut visited: HashSet<(i32, i32)> = HashSet::new();
+            stack.push(start);
+            visited.insert(start);
+            while !stack.is_empty() {
+                let curr = stack.pop().unwrap();
+                // we have reached the end
+                if curr == end {
+                    true;
+                }
+                let (x, y) = (curr.0, curr.1);
+                for (x_curr, y_curr) in &moves {
+                    let next: (i32, i32) = (x + x_curr, y + y_curr);
+                    if is_in_bounds(grid, next) && !visited.contains(&next) && !is_obsticle(grid, next) {
+                        stack.push(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            false
+        }
+
+        pub fn dijkstra(grid: &Vec<Vec<i32>>) {
+
+        }
+
+        pub fn a_star(grid: &Vec<Vec<i32>>) {
 
         }
 
@@ -156,6 +180,15 @@ mod graph {
             for row in grid {
                 println!("{:?}", row);
             }
+        }
+
+        #[test]
+        fn test_dfs() {
+            let grid = generate_valid_grid(100, 100);
+            let start = (0, 0);
+            let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
+            let result = traversals::dfs(&grid, start, end);
+            assert_eq!(result, true);
         }
     }
 
