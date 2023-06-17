@@ -190,6 +190,15 @@ pub mod graph {
             let result = traversals::dfs(&grid, start, end);
             assert_eq!(result, true);
         }
+
+        #[test]
+        fn test_bfs() {
+            let grid = generate_valid_grid(100, 100);
+            let start = (0, 0);
+            let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
+            let result = traversals::bfs(&grid, start, end);
+            assert_eq!(result, true);
+        }
     }
 
 }
