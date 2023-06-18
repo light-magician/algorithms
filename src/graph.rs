@@ -4,6 +4,10 @@ graph algorithms
 pub mod graph {
     use rand::{Rng, thread_rng, seq::SliceRandom};
 
+    const OBSTICLE: i32 = 1;
+    const EMPTY: i32 = 0;
+
+
     fn generate_valid_grid(w: i32, h: i32) -> Vec<Vec<i32>> {
         let mut rng = rand::thread_rng();
         // 2d array of random 0s and 1s
@@ -22,17 +26,20 @@ pub mod graph {
     }
 
     fn generate_valid_path(grid: &mut Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) {
-        /*
-        make start and end valid
-        shuffle the list of next moves
-        if a next move is valid and helps minimize distance, move there
-        if none are alter a move that minimizes distance
-         */
         // set valid start and end
         grid[start.0 as usize][start.1 as usize] = 0;
         grid[end.0 as usize][end.1 as usize] = 0;
 
-        let mut moves = moves();
+        let mut moves = vec![
+            (-1, -1), // up left
+            (-1, 0), // up
+            (-1, 1), // up right
+            (0, -1), // left
+            (0, 1), // right
+            (1, -1), // down left
+            (1, 0), // down
+            (1, 1), // down right
+        ];
         let mut rng = thread_rng();
         let mut current: (i32, i32) = start;
         /*
@@ -57,7 +64,7 @@ pub mod graph {
     }
 
     fn is_obsticle(grid: &Vec<Vec<i32>>, next: (i32, i32)) -> bool {
-        grid[next.0 as usize][next.1 as usize] == 1
+        grid[next.0 as usize][next.1 as usize] == OBSTICLE
     }
 
     fn is_closer(current:(i32, i32), next: (i32, i32), end: (i32, i32)) -> bool {
@@ -80,8 +87,14 @@ pub mod graph {
         next.0 >= 0 && next.0 < h && next.1 >= 0 && next.1 < w
     }
 
-    fn moves() -> Vec<(i32, i32)> {
-        let moves: Vec<(i32,i32)> = vec![
+    pub mod traversals {
+        /*
+        TODO: implement bfs, dfs, dijkstra, a*
+        write the algorithms and make sure they are both tested and benchmarked
+            and able to 
+         */
+
+         static MOVES: [(i32, i32); 8] = [
             (-1, -1), // up left
             (-1, 0), // up
             (-1, 1), // up right
@@ -91,23 +104,13 @@ pub mod graph {
             (1, 0), // down
             (1, 1), // down right
         ];
-        moves
-    }
-
-    pub mod traversals {
-        /*
-        TODO: implement bfs, dfs, dijkstra, a*
-        write the algorithms and make sure they are both tested and benchmarked
-            and able to 
-         */
 
         use std::collections::{VecDeque, HashSet};
 
-        use super::{is_obsticle, is_in_bounds, moves};
+        use super::{is_obsticle, is_in_bounds};
 
         pub fn bfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
-            let moves = moves();
-            let mut q = VecDeque::new(); // queue
+            let mut q =  VecDeque::new(); // queue
             let mut visited: HashSet<(i32, i32)> = HashSet::new();
 
             q.push_back(start);
@@ -116,24 +119,25 @@ pub mod graph {
                 let curr = q.pop_front().unwrap();
                 // we have reached the end
                 if curr == end {
-                    true;
+                    return true;
                 }
-                let (x, y) = (curr.0, curr.1);
-                for (x_curr, y_curr) in &moves {
-                    let next: (i32, i32) = (x + x_curr, y + y_curr);
-                    if is_in_bounds(grid, next) && !visited.contains(&next) && !is_obsticle(grid, next) {
+
+                for neighbor in MOVES.iter() {
+                    let next: (i32, i32) = (curr.0 + neighbor.0, curr.1 + neighbor.1);
+                    if is_in_bounds(grid, next) 
+                        && !visited.contains(&next) 
+                        && !is_obsticle(grid, next) {
                         q.push_back(next);
                         visited.insert(next);
                     }
                 }
             }
             // unable to reach the end
-            false
+            return false
 
         }
 
         pub fn dfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
-            let moves = moves();
             let mut stack = Vec::new(); //stack
             let mut visited: HashSet<(i32, i32)> = HashSet::new();
             stack.push(start);
@@ -142,37 +146,45 @@ pub mod graph {
                 let curr = stack.pop().unwrap();
                 // we have reached the end
                 if curr == end {
-                    true;
+                    return true;
                 }
-                let (x, y) = (curr.0, curr.1);
-                for (x_curr, y_curr) in &moves {
-                    let next: (i32, i32) = (x + x_curr, y + y_curr);
-                    if is_in_bounds(grid, next) && !visited.contains(&next) && !is_obsticle(grid, next) {
+                let (x_curr, y_curr) = (curr.0, curr.1);
+                for (x_move, y_move) in &MOVES {
+                    let next: (i32, i32) = (x_curr + x_move, y_curr + y_move);
+                    if is_in_bounds(grid, next) 
+                        && !visited.contains(&next) 
+                        && !is_obsticle(grid, next) {
                         stack.push(next);
                         visited.insert(next);
                     }
                 }
             }
-            false
+            return false;
         }
 
-        pub fn dijkstra(grid: &Vec<Vec<i32>>) {
+        // pub fn dijkstra(grid: &Vec<Vec<i32>>) {
 
-        }
+        // }
 
-        pub fn a_star(grid: &Vec<Vec<i32>>) {
+        // pub fn a_star(grid: &Vec<Vec<i32>>) {
 
-        }
+        // }
 
     }
 
     #[cfg(test)]
     mod graph_test {
+        use std::time::Instant;
+
+        use crate::timer::timer::report_function_timing;
+
         use super::*;
 
         #[test]
         fn test_generate_grid() {
-            let grid = generate_valid_grid(100, 100);
+            let start = Instant::now();
+            let grid = generate_valid_grid(10, 10);
+            report_function_timing(start, "generate grid");
             print_grid(&grid);
         }
 
@@ -185,18 +197,22 @@ pub mod graph {
         #[test]
         fn test_dfs() {
             let grid = generate_valid_grid(100, 100);
-            let start = (0, 0);
+            let s = (0, 0);
             let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
-            let result = traversals::dfs(&grid, start, end);
+            let start = Instant::now();
+            let result = traversals::dfs(&grid, s, end);
+            report_function_timing(start, "generate grid");
             assert_eq!(result, true);
         }
 
         #[test]
         fn test_bfs() {
             let grid = generate_valid_grid(100, 100);
-            let start = (0, 0);
+            let s = (0, 0);
             let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
-            let result = traversals::bfs(&grid, start, end);
+            let start = Instant::now();
+            let result = traversals::bfs(&grid, s, end);
+            report_function_timing(start, "generate grid");
             assert_eq!(result, true);
         }
     }

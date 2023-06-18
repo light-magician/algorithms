@@ -1,5 +1,6 @@
-mod sorting;
-mod graph;
+pub mod sorting;
+pub mod graph;
+pub mod timer;
 
 fn main() {
     println!("algorithms")
