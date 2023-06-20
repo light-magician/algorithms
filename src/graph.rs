@@ -2,25 +2,28 @@
 graph algorithms
  */
 pub mod graph {
+    use std::collections::HashSet;
+
     use rand::{Rng, thread_rng, seq::SliceRandom};
 
     const OBSTICLE: i32 = 1;
     const EMPTY: i32 = 0;
 
-
     fn generate_valid_grid(w: i32, h: i32) -> Vec<Vec<i32>> {
         let mut rng = rand::thread_rng();
         // 2d array of random 0s and 1s
-        let mut grid = vec![vec![0; w as usize]; h as usize];
+        let mut grid = vec![vec![1; w as usize]; h as usize];
         for i in 0..h {
             for j in 0..w {
-                grid[i as usize][j as usize] = rng.gen_range(0..=1);
+                if i == j {
+                    grid[i as usize][j as usize] = 0;
+                }
             }
         }
         let start = (0, 0);
         let end = (h - 1, w - 1);
         // Generate random path
-        generate_valid_path(&mut grid, start, end);
+        // generate_valid_path(&mut grid, start, end);
 
         grid
     }
@@ -47,15 +50,18 @@ pub mod graph {
          */
         while current != end {
             moves.shuffle(&mut rng);
+            let mut visited: HashSet<(i32, i32)> = HashSet::new();
             for (x_curr, y_curr) in &moves {
                 let next: (i32, i32) = (current.0 as i32 + x_curr, current.1 as i32 + y_curr);
-                // if random diretion is closer and is an obsticle, flip it
-                if is_in_bounds(grid, next) && is_closer(current, next, end) && is_obsticle(grid, next) {
-                        grid[next.0 as usize][next.1 as usize] = 0;
-                        current = next;
-                        break;
-                // if its not an obsticle move forward
-                } else if is_in_bounds(grid, next) && is_closer(current, next, end) {
+                // if its been visited skip it
+                if visited.contains(&next) {
+                    continue;
+                }
+                // if its in bounds and is closer to the end, move forward
+                if is_in_bounds(grid, next) && is_closer(current, next, end) 
+                    && !is_obsticle(&grid, next) {
+                    grid[next.0 as usize][next.1 as usize] = 0;
+                    visited.insert(next);
                     current = next;
                     break;
                 }
@@ -88,11 +94,6 @@ pub mod graph {
     }
 
     pub mod traversals {
-        /*
-        TODO: implement bfs, dfs, dijkstra, a*
-        write the algorithms and make sure they are both tested and benchmarked
-            and able to 
-         */
 
          static MOVES: [(i32, i32); 8] = [
             (-1, -1), // up left
@@ -105,9 +106,9 @@ pub mod graph {
             (1, 1), // down right
         ];
 
-        use std::collections::{VecDeque, HashSet};
+        use std::collections::{VecDeque, HashSet, BinaryHeap};
 
-        use super::{is_obsticle, is_in_bounds};
+        use super::{is_obsticle, is_in_bounds, euclidian_distance};
 
         pub fn bfs(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
             let mut q =  VecDeque::new(); // queue
@@ -162,19 +163,38 @@ pub mod graph {
             return false;
         }
 
-        // pub fn dijkstra(grid: &Vec<Vec<i32>>) {
 
-        // }
-
-        // pub fn a_star(grid: &Vec<Vec<i32>>) {
-
-        // }
+        pub fn a_star(grid: &Vec<Vec<i32>>, start: (i32, i32), end: (i32, i32)) -> bool {
+        let mut heap: BinaryHeap<(i32, i32, i32)> = BinaryHeap::new();
+        let mut visited: HashSet<(i32, i32)> = HashSet::new();
+        heap.push((0, start.0, start.1)); // doesn't matter the first euclidian value
+        visited.insert(start);
+        while !heap.is_empty() {
+            let curr = heap.pop().unwrap();
+            // we have reached the end
+            if (curr.1, curr.2) == end {
+                return true;
+            }
+            let (x_curr, y_curr) = (curr.1, curr.2);
+            for (x_move, y_move) in &MOVES {
+                let next: (i32, i32) = (x_curr + x_move, y_curr + y_move);
+                if is_in_bounds(grid, next) 
+                    && !visited.contains(&next) 
+                    && !is_obsticle(grid, next) {
+                    heap.push((-1 * euclidian_distance(next, end), next.0, next.1));
+                    visited.insert(next);
+                }
+            }
+        }
+        return false;
+    }
 
     }
 
     #[cfg(test)]
     mod graph_test {
         use std::time::Instant;
+        use test::Bencher;
 
         use crate::timer::timer::report_function_timing;
 
@@ -183,9 +203,8 @@ pub mod graph {
         #[test]
         fn test_generate_grid() {
             let start = Instant::now();
-            let grid = generate_valid_grid(10, 10);
+            let grid = generate_valid_grid(10000, 10000);
             report_function_timing(start, "generate grid");
-            print_grid(&grid);
         }
 
         fn print_grid(grid: &Vec<Vec<i32>>) {
@@ -196,23 +215,34 @@ pub mod graph {
 
         #[test]
         fn test_dfs() {
-            let grid = generate_valid_grid(100, 100);
+            let grid = generate_valid_grid(10000, 10000);
             let s = (0, 0);
             let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
             let start = Instant::now();
             let result = traversals::dfs(&grid, s, end);
-            report_function_timing(start, "generate grid");
+            report_function_timing(start, "dfs grid");
             assert_eq!(result, true);
         }
 
         #[test]
         fn test_bfs() {
-            let grid = generate_valid_grid(100, 100);
+            let grid = generate_valid_grid(10000, 10000);
             let s = (0, 0);
             let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
             let start = Instant::now();
             let result = traversals::bfs(&grid, s, end);
-            report_function_timing(start, "generate grid");
+            report_function_timing(start, "bfs grid");
+            assert_eq!(result, true);
+        }
+
+        #[test]
+        fn test_a_star() {
+            let grid = generate_valid_grid(10000, 10000);
+            let s = (0, 0);
+            let end = (grid.len() as i32 - 1, grid[0].len() as i32 - 1);
+            let start = Instant::now();
+            let result = traversals::a_star(&grid, s, end);
+            report_function_timing(start, "A* grid");
             assert_eq!(result, true);
         }
     }
