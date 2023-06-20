@@ -68,6 +68,8 @@ mod sorting {
 
     #[cfg(test)]
     mod sorting_test {
+        use crate::timer::timer::report_function_timing;
+
         use super::*;
         use std::time::Instant;
 
@@ -76,7 +78,7 @@ mod sorting {
             let mut arr = [1, 2, 3, 4, 5];
             let start = Instant::now();
             reverse(&mut arr);
-            report_timing(start, "reverse list");
+            report_function_timing(start, "reverse list");
             assert_eq!(arr, [5, 4, 3, 2, 1]);
         }
 
@@ -85,7 +87,7 @@ mod sorting {
             let mut arr = [5, 4, 3, 2, 1];
             let start = Instant::now();
             bubble(&mut arr);
-            report_timing(start, "bubblesort");
+            report_function_timing(start, "bubblesort");
             assert_eq!(arr, [1, 2, 3, 4, 5]);
         }
 
@@ -94,13 +96,8 @@ mod sorting {
             let mut arr = [5, 4, 3, 2, 1];
             let start = Instant::now();
             quick(&mut arr);
-            report_timing(start, "quicksort");
+            report_function_timing(start, "quicksort");
             assert_eq!(arr, [1, 2, 3, 4, 5]);
-        }
-
-        fn report_timing(start: Instant, name: &str) {
-            let elapsed = start.elapsed();
-            println!("{} execution time: {:?}", name, elapsed);
         }
     }
 }
