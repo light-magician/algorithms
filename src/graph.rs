@@ -194,7 +194,6 @@ pub mod graph {
     #[cfg(test)]
     mod graph_test {
         use std::time::Instant;
-        use test::Bencher;
 
         use crate::timer::timer::report_function_timing;
 
