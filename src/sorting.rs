@@ -2,6 +2,7 @@
 /*
 Sorting algorithms
  */
+#[allow(dead_code)]
 mod sorting {
     // Time: O(n) Space: O(1)
     fn reverse(arr: &mut [i32]) {

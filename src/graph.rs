@@ -1,16 +1,18 @@
 /*
 graph algorithms
  */
+#[allow(dead_code)]
 pub mod graph {
     use std::collections::HashSet;
 
-    use rand::{ Rng, thread_rng, seq::SliceRandom };
+    use rand::{ thread_rng, seq::SliceRandom };
 
     const OBSTICLE: i32 = 1;
     const EMPTY: i32 = 0;
 
+    
     fn generate_valid_grid(w: i32, h: i32) -> Vec<Vec<i32>> {
-        let mut rng = rand::thread_rng();
+        let _rng = rand::thread_rng();
         // 2d array of random 0s and 1s
         let mut grid = vec![vec![1; w as usize]; h as usize];
         for i in 0..h {
@@ -20,8 +22,8 @@ pub mod graph {
                 }
             }
         }
-        let start = (0, 0);
-        let end = (h - 1, w - 1);
+        let _start = (0, 0);
+        let _end = (h - 1, w - 1);
         // Generate random path
         // generate_valid_path(&mut grid, start, end);
 
@@ -212,7 +214,7 @@ pub mod graph {
         #[test]
         fn test_generate_grid() {
             let start = Instant::now();
-            let grid = generate_valid_grid(10000, 10000);
+            generate_valid_grid(10000, 10000);
             report_function_timing(start, "generate grid");
         }
 

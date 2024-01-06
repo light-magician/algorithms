@@ -1,3 +1,5 @@
+
+#[allow(dead_code)]
 pub mod term_io {
     use std::thread;
     use std::time::Duration;
