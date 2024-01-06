@@ -8,5 +8,4 @@ edition = "2021"
 
 [dependencies]
 ndarray = { version = "0.15.6", features = ["serde"] }
-polars = { version = "0.30.0", features = ["lazy"] }
 rand = "0.8"
