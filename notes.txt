@@ -1,0 +1,15 @@
+What to make:
+ an autonomous robot that can identify plants and when they need to be watered.
+ a gardening bot essentially
+
+What we need:
+    small robot with a camera
+    can navigate around
+    can find its own charger
+    can plug into its own charger
+
+
+open cv to recognize the plants
+
+Look into building a robot that navigates around the house
+Basically want the mars rover but for plants at my house

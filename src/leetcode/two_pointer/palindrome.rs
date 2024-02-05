@@ -1,6 +1,6 @@
 
 
-impl Solution {
+pub mod Palindrome {
     /*
     A phrase is a palindrome if, after converting all uppercase 
     letters into lowercase letters and removing all non-alphanumeric 
@@ -9,7 +9,7 @@ impl Solution {
      */
     pub fn valid_palindrome(s: String) -> bool {
         // convert a String to a char vec
-        let chars: Vec<char> = input_string.chars()
+        let chars: Vec<char> = s.chars()
         .filter(|c| c.is_ascii_alphanumeric())
         .map(|c| c.to_ascii_lowercase())
         .collect();
@@ -35,7 +35,7 @@ impl Solution {
 
         #[test]
         fn test_valid_palindrome() {
-            assert_eq!(valid_palindrome(" ", true));
+            assert_eq!(valid_palindrome(" ".to_string()), true);
         }
     }
 }
