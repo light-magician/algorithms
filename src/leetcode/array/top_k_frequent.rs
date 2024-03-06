@@ -10,6 +10,9 @@ The obvious answer is to count them and sort by frequency.
 Answer two is to use a max heap or an inverted min heap if that
     is how heap is implemented in rust.
 I think there is a more technical solution as well...
+
+There is an O(n) solution
+There is also a quickselect solution that is also O(n)
 */
 
 impl Solution {
