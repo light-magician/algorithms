@@ -3,6 +3,7 @@ pub fn majority_element(nums: Vec<i32>) -> i32 {
     for num in nums {
         counter.entry(num).and_modify(|count| *count += 1).or_insert(1);
     }
+    // weak on this java 8 like syntax need to study it
     counter
         .iter()
         .max_by_key(|(key, value)| *value)
