@@ -3,7 +3,7 @@ impl Solution {
     /*
     0 1 2 3 - 2
     should get 2 3 0 1
-
+    learn that reverse syntax and that slicing syntax
     */
     // edge case of k = 0
     let n = nums.len() as i32;
