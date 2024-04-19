@@ -41,6 +41,9 @@ impl Solution {
         O(n*log(n)) to sort
         O(n*log(n)) same thing to search out appropriate numbers, every number is either
             too large or too small, maybe come back to this one once we have some binary search practice
+        I am not even fully sure the sorting thing would work, may be worth it to look this one up
+        how do I know between any two numbers that there isn't a third that would satisfy
+        
         */
     }
 }
