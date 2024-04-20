@@ -1,15 +1,12 @@
-What to make:
- an autonomous robot that can identify plants and when they need to be watered.
- a gardening bot essentially
-
-What we need:
-    small robot with a camera
-    can navigate around
-    can find its own charger
-    can plug into its own charger
 
 
-open cv to recognize the plants
 
-Look into building a robot that navigates around the house
-Basically want the mars rover but for plants at my house
+Need a Board:
+	- moster card zones
+	- spell and trap 
+
+
+Alterior Game Designs:
+	- there should probably be a system by which you can trade resources for things
+	- maybe destroying monsters leads to draws, or having monsters destroyed leads to draws
+	- there needs to be slightly more drawing, it has to be good chances to encounter all cards once
