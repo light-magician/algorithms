@@ -1,12 +1,47 @@
 
+Game:
+	has two players
+	has turns that correspond to players
+	players have life points
+	has an agent that searches for win conditions
+	has a Board
 
+Board:
+	has a list Monster Card Zones
+	has a list Spell & trap Card Zones
+	has an extra deck pile
+	has a deck pile
+	has a has a Graveyard Pile
 
-Need a Board:
-	- moster card zones
-	- spell and trap 
-
+Cards:
+	name
+	attribute
+		monster
+			attack
+			defense
+			effect
+			type (dark, light whatever)
+			level
+	level
+	
 
 Alterior Game Designs:
 	- there should probably be a system by which you can trade resources for things
 	- maybe destroying monsters leads to draws, or having monsters destroyed leads to draws
 	- there needs to be slightly more drawing, it has to be good chances to encounter all cards once
+
+Thinking about deck builds:
+	the sacrifice mechanic is ideal, the best reason to play weaker monsters
+	monsters like "kuriboh" paired with "tourguide from the underworld", sangan, "witch of the black forest"
+		ect are great combos to keep cards in the hand.
+		Those cards also make for good components for a ritual monster, like BLS
+
+	No hand traps at all
+
+
+
+
+
+
+
+	
