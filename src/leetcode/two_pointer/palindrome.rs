@@ -1,6 +1,6 @@
 
 
-impl Solution {
+pub mod IsPalindrome {
     pub fn is_palindrome(s: String) -> bool {
         // the chars thing is bs TODO: lookup char in Rust
         let cleaned: String = s
