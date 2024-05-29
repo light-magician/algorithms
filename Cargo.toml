@@ -3,11 +3,6 @@ name = "algorithms"
 version = "0.1.0"
 edition = "2021"
 
-[package.metadata]
-rustc-flags = ["-A", "unused"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 ndarray = { version = "0.15.6", features = ["serde"] }
 rand = "0.8"
