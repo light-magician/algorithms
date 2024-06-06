@@ -1,6 +1,4 @@
-
-
-// Given an m x n 2D binary grid grid which represents a map of 
+// Given an m x n 2D binary grid grid which represents a map of
 // '1's (land) and '0's (water), return the number of islands.
 // An island is surrounded by water and is formed by connecting
 // adjacent lands horizontally or vertically. You may assume all
@@ -14,9 +12,6 @@
 // ]
 // Output: 1
 // Example 2:
-
-use std::{collections::{HashSet, VecDeque}, usize};
-
 // Input: grid = [
 //   ["1","1","0","0","0"],
 //   ["1","1","0","0","0"],
@@ -29,96 +24,123 @@ use std::{collections::{HashSet, VecDeque}, usize};
 // n == grid[i].length
 // 1 <= m, n <= 300
 // grid[i][j] is '0' or '1'.
+//
+// some are dfs
 pub fn num_islands(grid: Vec<Vec<char>>) -> i32 {
-    /*
-    its of charaters that need to be ints probably
-    we need a set of tuples that we have seen before
-    we need a deque that we can contribute to
-    pass the grid as s ref
+    use std::{
+        collections::{HashSet, VecDeque},
+        usize,
+    };
 
-    seen is a set of tuples of i32 cooridinates
-    queue will be contained in a helper function
-        if we find an island 
+    fn is_land(coordinate: &(i32, i32), grid: &Vec<Vec<char>>) -> bool {
+        return grid[coordinate.0 as usize][coordinate.1 as usize] == '1';
+    }
+    fn is_inbounds(check: &(i32, i32), x: i32, y: i32) -> bool {
+        return (check.0 >= 0 && check.0 < x) && (check.1 >= 0 && check.1 < y);
+    }
+    fn visit_land(
+        visited: &mut HashSet<(i32, i32)>,
+        grid: &Vec<Vec<char>>,
+        q: &mut VecDeque<(i32, i32)>,
+        search_directions: &Vec<(i32, i32)>,
+        x: i32,
+        y: i32,
+    ) {
+        // breadth first search
+        while !q.is_empty() {
+            let curr = q.pop_front().unwrap();
+            // check for land in cardinal directions around curr
+            for direction in search_directions {
+                let check = (curr.0 + direction.0, curr.1 + direction.1);
+                // out of bounds skip
+                if !is_inbounds(&check, x, y) {
+                    continue;
+                }
+                if !visited.contains(&check) {
+                    if is_land(&check, &grid) {
+                        q.push_back(check);
+                    }
+                    visited.insert(check);
+                }
+            }
+        }
+    }
 
-    so how do we want to break this down
-    double loop
-    make a tuple
-    has that tuple been checked before ?
-    if not is that tuple land
-
-    check directions ... a list of next directions
-
-    making the visited a usize makes checking that its out of bounds too hard 
-    check in bounds and is island
-     */
     let mut visited: HashSet<(i32, i32)> = HashSet::new();
     let mut island_count: i32 = 0;
     // x y cooridnates
     let x = grid.len();
     let y = grid[0].len();
+
+    // search directions
+    let search_directions = vec![(-1, 0), (1, 0), (0, 1), (0, -1)];
     // grid loop
     for i in 0..x {
         for j in 0..y {
             let curr = (i as i32, j as i32);
             // you have to borrow values to check their in collections
-            if !visited.contains(&curr) { 
-                if is_land(&curr, &grid) {
-                    island_count += 1;
-                    visited.insert(curr);
-                    let mut q: VecDeque<(i32, i32)> = VecDeque::new();
-                    q.push_back(curr);
-                    visit_land(&mut visited, &grid, &mut q);
-                } else {
-                    visited.insert(curr);
-                }
-
+            if is_land(&curr, &grid) && !visited.contains(&curr) {
+                island_count += 1;
+                visited.insert(curr);
+                let mut q: VecDeque<(i32, i32)> = VecDeque::new();
+                q.push_back(curr);
+                visit_land(
+                    &mut visited,
+                    &grid,
+                    &mut q,
+                    &search_directions,
+                    x as i32,
+                    y as i32,
+                );
+            } else {
+                visited.insert(curr);
             }
         }
     }
-
-    return island_count;
+    island_count
 }
 
-fn is_land(coordinate: &(i32, i32), grid: &Vec<Vec<char>>) -> bool {
-    return grid[coordinate.0 as usize][coordinate.1 as usize] == '1';
-}
-
-fn visit_land(visited: &mut HashSet<(i32, i32)>, grid: &Vec<Vec<char>>, q: &mut VecDeque<(i32, i32)>) {
-    // the goal is to visit the other related land on the grid in the 4 cardinal directions
-    let search_directions = vec![
-        (-1, 0), (1, 0), (0, 1), (0, -1)
-    ];
-    // x y cooridnates
-    let x = grid.len() as i32;
-    let y = grid[0].len() as i32;
-
-    while !q.is_empty() {
-        let curr = q.pop_front().unwrap();
-        // check for land in cardinal directions around curr
-        for direction in &search_directions {
-            let check = (curr.0 + direction.0, curr.1 + direction.1);
-            // out of bounds skip
-            if !is_inbounds(&check, x, y) {
-                continue;
-            }
-            if !visited.contains(&check) {
-                if is_land(&check, &grid) {
-                    q.push_back(check);
+pub fn num_islands_no_set(grid: Vec<Vec<char>>) -> i32 {
+    use std::collections::VecDeque;
+    // breadth first search
+    fn bfs(grid: &mut Vec<Vec<char>>, directions: &Vec<(i32, i32)>, coord: (i32, i32)) {
+        let mut q: VecDeque<(i32, i32)> = VecDeque::new();
+        q.push_back(coord);
+        while !q.is_empty() {
+            let coord = q.pop_front().unwrap();
+            for d in directions {
+                let diff = (coord.0 + d.0, coord.1 + d.1);
+                if diff.0 >= 0
+                    && diff.0 < grid.len() as i32
+                    && diff.1 >= 0
+                    && diff.1 < grid[0].len() as i32
+                    && grid[diff.0 as usize][diff.1 as usize] == '1'
+                {
+                    grid[diff.0 as usize][diff.1 as usize] = '0';
+                    q.push_back(diff);
                 }
-                visited.insert(check);
             }
-        }   
+        }
     }
+    // dont have to check if its
+    let directions = vec![(1, 0), (-1, 0), (0, 1), (0, -1)];
+    let mut islands = 0;
+    let mut grid = grid;
+    // search
+    for i in 0..grid.len() {
+        for j in 0..grid[0].len() {
+            if grid[i][j] == '1' {
+                islands += 1;
+                grid[i][j] = '0';
+                bfs(&mut grid, &directions, (i as i32, j as i32));
+            }
+        }
+    }
+    islands
 }
-
-fn is_inbounds(check: &(i32, i32), x: i32, y: i32) -> bool {
-    // majorly important greater than or equal to zero, non-negative or >= size is illegal
-    return (check.0 >= 0 && check.0 < x) && (check.1 >= 0 && check.1 < y);
-}
-
 #[cfg(test)]
 mod graph_tests {
-    use crate::graph::num_islands;
+    use crate::graph::{num_islands, num_islands_no_set};
 
     #[test]
     fn num_islands_test() {
@@ -131,4 +153,14 @@ mod graph_tests {
         assert_eq!(1, num_islands(grid));
     }
 
+    #[test]
+    fn num_islands_no_set_test() {
+        let grid: Vec<Vec<char>> = vec![
+            vec!['1', '1', '1', '1', '0'],
+            vec!['1', '1', '0', '1', '0'],
+            vec!['1', '1', '0', '0', '0'],
+            vec!['0', '0', '0', '0', '0'],
+        ];
+        assert_eq!(1, num_islands_no_set(grid));
+    }
 }
