@@ -4,3 +4,4 @@ pub mod linear_algebra;
 pub mod timer;
 pub mod array;
 pub mod graph;
+pub mod sliding_window;
