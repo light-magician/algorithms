@@ -5,3 +5,4 @@ pub mod timer;
 pub mod two_pointer;
 pub mod graph;
 pub mod sliding_window;
+pub mod arrays;
