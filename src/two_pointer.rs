@@ -122,13 +122,46 @@ pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
     return answer;
 }
 
+
+// You are given an integer array height of length n. There are n vertical lines drawn such that the two endpoints of the ith line are (i, 0) and (i, height[i]).
+// Find two lines that together with the x-axis form a container, such that the container contains the most water.
+// Return the maximum amount of water a container can store.
+// Notice that you may not slant the container.
+// Input: height = [1,8,6,2,5,4,8,3,7]
+// Output: 49
+// Explanation: The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49.
+// Example 2:
+// Input: height = [1,1]
+// Output: 1
+pub fn container_w_most_water(height: Vec<i32>) -> i32 {
+    fn area(h1: i32, w1: i32, h2: i32, w2: i32) -> i32 {
+        h1.min(h2) * (w2 - w1)
+    }
+    let mut mh = 0;
+    let mut r: usize = height.len() - 1;
+    let mut l: usize = 0;
+    while l < r {
+        mh = mh.max(area(height[l], l as i32, height[r], r as i32));
+        if height[l] < height[r] {
+            l += 1;
+        } else {
+            r -= 1
+        }
+    }
+    mh
+}
+
+
+
 #[cfg(test)]
 mod array_test {
-    use crate::two_pointer::{
-        top_k_frequent_n, 
-        top_k_frequent_nlogn,
-        three_sum
-    };
+    use crate::two_pointer::*;
+
+    #[test]
+    pub fn container_w_most_water_test() {
+        let height = vec![1,8,6,2,5,4,8,3,7];
+        assert_eq!(49, container_w_most_water(height));
+    }
 
     #[test]
     pub fn three_sum_test() {
