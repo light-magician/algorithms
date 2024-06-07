@@ -1,3 +1,4 @@
+
 // Given an integer array nums and an integer k, return the k
 // most frequent elements. You may return the answer in any order.
 // Example 1:
@@ -6,7 +7,6 @@
 // Example 2:
 // Input: nums = [1], k = 1
 // Output: [1]
-
 pub fn top_k_frequent_nlogn(nums: Vec<i32>, k: i32) -> Vec<i32> {
     // O(nlogn) version
     use std::collections::HashMap;
@@ -64,6 +64,7 @@ pub fn top_k_frequent_n(nums: Vec<i32>, k: i32) -> Vec<i32> {
 // Notice that the solution set must not contain duplicate triplets.
 // Example 1:
 // Input: nums = [-1,0,1,2,-1,-4]
+//               [-4, -1, -1, 0 , 1, 2]
 // Output: [[-1,-1,2],[-1,0,1]]
 // Explanation:
 // nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
@@ -80,26 +81,71 @@ pub fn top_k_frequent_n(nums: Vec<i32>, k: i32) -> Vec<i32> {
 // Output: [[0,0,0]]
 // Explanation: The only possible triplet sums up to 0.
 pub fn three_sum(nums: Vec<i32>) -> Vec<Vec<i32>> {
-    let mut ans: Vec<Vec<i32>> = Vec::new();
-    if nums.len() < 3 {return ans}
+    use std::collections::HashSet;
+    let mut set: HashSet<Vec<i32>> = HashSet::new();
+    let mut answer: Vec<Vec<i32>> = Vec::new();
+    if nums.len() < 3 {return answer}
     let mut nums = nums;
     nums.sort();
     // from 1 to end - 1
-    let mut high:usize = nums.len() - 1;
-    let mut low:usize = 0;
-    let mut i: usize = 1; // len 3 is 0 1 2 ...
-    while i < nums.len() - 1 {
-
+    let mut center: usize = 1; // len 3 is 0 1 2 ...
+    while center < nums.len() - 1 {
+        let mut high:usize = nums.len() - 1;
+        let mut low:usize = 0;
+        /*
+        there can be duplicates
+         */
+        while low != center && high != center {
+            let sum: i32 = nums[low] + nums[center] + nums[high];
+            if sum == 0 {
+                let matches: Vec<i32> = vec![nums[low], nums[center], nums[high]];
+                if !set.contains(&matches) { // no duplicate number entries
+                    answer.push(matches.clone()); // have to clone or val is moved to arr
+                    set.insert(matches);
+                }
+                // move in the one that is farthest away
+                let left_distance: i32 = center as i32 - low as i32;
+                let right_distance: i32 = high as i32 - center as i32;
+                if left_distance > right_distance {
+                    low += 1;
+                } else {
+                    high -= 1;
+                }
+            } else if sum > 0 {
+                high -= 1;
+            } else {
+                low += 1;
+            }
+        }
+        center += 1;
     }
-    return ans;
+    return answer;
 }
 
 #[cfg(test)]
 mod array_test {
-    use crate::two_pointer::{top_k_frequent_n, top_k_frequent_nlogn};
+    use crate::two_pointer::{
+        top_k_frequent_n, 
+        top_k_frequent_nlogn,
+        three_sum
+    };
 
     #[test]
-    pub fn three_sum_test() {}
+    pub fn three_sum_test() {
+
+// Input: nums = [-1,0,1,2,-1,-4]
+//               [-4, -1, -1, 0 , 1, 2]
+// Output: [[-1,-1,2],[-1,0,1]]
+        let mut nums: Vec<i32> = vec![-1,0,1,2,-1,-4];
+        let mut answer: Vec<Vec<i32>> = vec![vec![-1,-1,2],vec![-1,0,1]];
+        assert_eq!(answer, three_sum(nums));
+        nums = vec![0, 0, 0, 0, 0];
+        answer = vec![vec![0, 0, 0]];
+        assert_eq!(answer, three_sum(nums));
+        nums = vec![0, 1, 1];
+        answer = vec![];
+        assert_eq!(answer, three_sum(nums));
+    }
 
     #[test]
     pub fn top_k_frequent_test_nlogn() {
