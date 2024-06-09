@@ -69,10 +69,31 @@ pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
     longest
 }
 
+pub fn max_profit(prices: Vec<i32>) -> i32 {
+    // at first I bought high and sold low XD
+    // keep track of the lowest price seen, and max profit recorded
+    let mut low = i32::MAX;
+    let mut profit = 0;
+    for price in prices {
+        // either price is lower than min price or check for profit
+        if price < low {
+            low = price;
+        }
+        profit = profit.max(price - low);
+    }
+    return profit;
+}
+
 #[cfg(test)]
 pub mod array_tests {
 
     use crate::arrays::*;
+
+    #[test]
+    pub fn max_profit_test() {
+        let nums = vec![7,1,5,3,6,4];
+        assert_eq!(5, max_profit(nums));
+    }
 
     #[test]
     pub fn longest_consecutive_test() {

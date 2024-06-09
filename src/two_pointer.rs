@@ -152,7 +152,6 @@ pub fn container_w_most_water(height: Vec<i32>) -> i32 {
 }
 
 
-
 #[cfg(test)]
 mod array_test {
     use crate::two_pointer::*;
