@@ -151,10 +151,92 @@ pub fn merge_sorted_array(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n:
 
 }
 
+pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
+    nums.retain(|&x| x != val);
+    nums.len() as i32
+}
+
+/// takes a list of nums
+/// returns length of list after dupe removal
+pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
+    // loop from one to end
+    let mut i: usize = 1;
+    while i < nums.len() {
+        // only increment if not removed
+        let curr = nums[i];
+        let prev = nums[i - 1];
+        if curr == prev {
+            nums.remove(i);
+            continue;
+        }
+        i += 1;
+    }
+
+    nums.len() as i32
+}
+
+// remove so that each element appears at most twice
+// extra space allocation is not permitted
+pub fn remove_duplicates_two(nums: &mut Vec<i32>) -> i32 {
+    // whats the simplest way to do this, expand mem with a map
+    // lead and tail pointer  if its a new value
+    // when we find a new one, delete whats betwen current and tail
+    // then reset curr and tail
+    let mut lead: usize = 0;
+    let mut tail: usize = 0;
+    while lead < nums.len() {
+        if nums[lead] != nums[tail] {
+            // 1, 1, 1, 2, 2, 2
+            // 0, 1, 1, 2, 2
+            // whats the diff, you want it to be 2 as in 0, 1, 2
+            while lead - tail > 2 {
+                nums.remove(lead - 1);
+                lead -= 1; // move it back in
+            }
+            tail = lead;
+        } else {
+            lead += 1;
+        }
+    }
+    // risky removing on the tail index
+    if lead - tail > 2 {
+        while lead - tail > 2 {
+            nums.remove(lead - 1);
+            lead -= 1; // move it back in
+        }
+    }
+    // handle the edge case here
+    // 1 1 2 2 2 x
+    nums.len() as i32
+}
+
 #[cfg(test)]
 pub mod array_tests {
 
     use crate::arrays::*;
+
+    #[test]
+    pub fn remove_dupliicates_two() {
+        let mut arr: Vec<i32> = vec![1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3];
+        let ans: i32 = 6;
+        assert_eq!(remove_duplicates_two(& mut arr), ans);
+    }
+
+    #[test]
+    pub fn remove_duplicate() {
+        let mut arr: Vec<i32> = vec![1, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5];
+        let ans: i32 = 5;
+        assert_eq!(remove_duplicates(& mut arr), ans);
+    }
+
+    #[test]
+    pub fn remove_element_test() {
+        //remove an element in place
+        let mut arr: Vec<i32> = vec![1, 2, 3, 5, 5, 6, 7, 1, 5];
+        let num: i32 = 5;
+        let ans: Vec<i32> = vec![1, 2, 3, 6, 7, 1];
+        assert_eq!(remove_element(&mut arr, num), ans.len() as i32);
+    }
 
     #[test]
     pub fn merge_sorted_array_test() {
