@@ -210,6 +210,46 @@ pub fn remove_duplicates_two(nums: &mut Vec<i32>) -> i32 {
     nums.len() as i32
 }
 
+// Input: nums = [1,2,3,4,5,6,7], k = 3
+// Output: [5,6,7,1,2,3,4]
+// Explanation:
+// 1 2 3 4 5 6
+// rotate 1 steps to the right: [7,1,2,3,4,5,6]
+// rotate 2 steps to the right: [6,7,1,2,3,4,5]
+// rotate 3 steps to the right: [5,6,7,1,2,3,4]
+pub fn rotate(nums: &mut Vec<i32>, k: i32) {
+    // what I am thinking is st ptr at zero and len - k
+    // rotate the right number of times, always n
+    // if head ptr is len wrap it to zero
+
+    
+    let head: usize = nums.len() - 1 - k as usize - 1;
+    let base: usize = 0;
+    /// there were 6 elements and we flipped 2, meaning we need to flip 4 more
+    /// meaning we need 2 more flips, but where should the indexes be. 
+    /// base can stay the same, and it should flip with the index we started flipping at
+    /// perform k flips, then from base and original head, perform len - 1 - k flips ?
+    /// len 6, k = 2 , do 2 flips 
+    // this is actually a good question
+    // once you have done k flips its done if its even
+    // if its odd you have to do n flips, if even you have to do 
+    let mut ans: Vec<i32> =Vec::new();
+    let mut seek: usize = nums.len() - k as usize; // should yeild correct result
+    let mut count: usize = 0;
+    while count < nums.len() {
+        let num = nums[seek];
+        ans.push(num);
+        seek += 1;
+        count += 1;
+        if seek == nums.len() {
+            seek = 0;
+        }
+    }
+    for i in 0..nums.len() {
+        nums[i] = ans[i];
+    }
+}
+
 #[cfg(test)]
 pub mod array_tests {
 
