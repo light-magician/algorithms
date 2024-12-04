@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+metal = "0.30.0"
 ndarray = { version = "0.15.6", features = ["serde"] }
 rand = "0.8"

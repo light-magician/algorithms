@@ -1,16 +1,47 @@
+/// This is matrix multiplication done in Rust
+/// 
+/// CPU Optimizations:
+///     block matrix multiplication to improve cache utilization
+///     parallel processing using rayon
+///     flat array representation for better mem access patterns
+///     manual loop unrolling for instruction level parallelism
+/// GPU Optimizations ...
+
+/// here 'a is a borrow ref that means that 
+struct MatrixBlock<'a> {
+    data: &'a [f64],
+    start_row: usize,
+    end_row: usize,
+    cols: usize,
+}
+
+struct Matrix_Config {
+    block_size: usize,
+    parallelization_threshold: usize,
+}
+
+impl Default for Matrix_Config {
+    fn default() -> Self {
+        // default block size for cache optimization
+        // minimim size before using parallel processing
+        Self {
+            block_size: 32,
+            parallelization_threshold: 64
+        }
+    }
+}
+
 /// its really a matrix that you want to multiply
 /// a alters row, b alters column
 pub fn mat_mul_naive(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Result<Vec<Vec<f64>>, MatrixMultiplyError> {
-    // go down the row of a and multiply with the col of B
-    // that will go inside i, j
-    // check that the matrix can be multiplied
-    // formulate the new matrix
-    // find the mem address where THIS result is going
-    // facilitate the multiplication
     let a_rows: usize = a.len();
     let a_cols: usize = a[0].len();
     let b_rows: usize = b.len();
     let b_cols: usize = b[0].len();
+
+    // flattening, now access with i * number of cols + j rather than @i @j
+    let a_flat: Vec<f64> = a.iter().flat_map(|row| row.iter().cloned()).collect();
+    let b_flat: Vec<f64> = a.iter().flat_map(|row| row.iter().cloned()).collect();
 
     // validate dimensions
     if !can_mul(a_cols, b_rows) {
@@ -25,10 +56,6 @@ pub fn mat_mul_naive(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Result<Vec<Vec<f64
     // preallocate result array of correct size
     // result will be of a_rows x b_cols
     let mut result = vec![vec![0.0; b_cols]; a_rows];
-    // let mut a_row: usize = 0;
-    // let mut a_col: usize = 0;
-    // let mut b_row: usize = 0;
-    // let mut b_col: usize = 0;
 
     for i in 0..a_rows {
         for j in 0..b_cols {
@@ -41,9 +68,6 @@ pub fn mat_mul_naive(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Result<Vec<Vec<f64
     Ok(result)
 }
 
-fn can_mul(a_cols: usize, b_rows: usize) -> bool {
-    a_cols == b_rows
-}
 
 #[derive(Debug)]
 pub enum MatrixMultiplyError {
