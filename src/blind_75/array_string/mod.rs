@@ -28,7 +28,11 @@ pub fn merge_alternately(word1: String, word2: String) -> String {
 /// (i.e., t is concatenated with itself one or more times).
 /// Given two strings str1 and str2, return the largest string
 /// x such that x divides both str1 and str2.
-pub fn gcd_of_strings(str1: String, str2: String) -> String {}
+pub fn gcd_of_strings(str1: String, str2: String) -> String {
+    // ABCABC ABC ->  xABC
+    // ABABAB ABAB -> AB
+    // LEET CODE -> (empty)
+}
 
 #[cfg(test)]
 mod array_string_tests {
