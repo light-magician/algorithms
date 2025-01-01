@@ -51,6 +51,8 @@ struct FlatMatrix {
     rows: usize,
     cols: usize
 }
+
+
 /// Flat matrix implementation
 struct MatrixBlock<'a> {
     data: &'a [f64],
