@@ -5,27 +5,34 @@
 #include <stdio.h>
 #include <string.h>
 
+// volitile int
+static volatile int counter = 0;
+
 // take pointer to function and execute
-void *mythread(void *fn) {
-  fn;
+// no point to do this, just for practice
+//      with function passing
+void *mythread(void *str) {
+  printf("%s\n", (char *)str);
+  int i;
+  for (i = 0; i < 1e7; i++) {
+    counter = counter + 1;
+  }
+  printf("%s done\n", (char *)str);
   return NULL;
 }
 
 // take pointer to string and print it
-void *print(void *str) {
-  printf("%s\n", (char *)str);
-  return NULL;
-}
-
+// a race condition is ullustrated by different
+//      results based on timing of code execution
 int main(int argc, char *argv[]) {
   pthread_t p1, p2;
   int rc;
-  printf("main: begin\n");
-  pthread_create(&p1, NULL, mythread, print("A"));
-  pthread_create(&p2, NULL, mythread, print("B"));
+  printf("main: begin (counter = %d)\n", counter);
+  pthread_create(&p1, NULL, mythread, "A");
+  pthread_create(&p2, NULL, mythread, "B");
   // join waits for the threads to finish
   pthread_join(p1, NULL);
   pthread_join(p2, NULL);
-  printf("main: end\n");
+  printf("main: done with both (counter = %d)\n", counter);
   return 0;
 }
