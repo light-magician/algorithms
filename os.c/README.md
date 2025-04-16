@@ -8,3 +8,11 @@ https://pages.cs.wisc.edu/~remzi/OSTEP/
 ```bash
 gcc -o create_thread.o create_thread.c
 ```
+
+### disassembling
+
+to view the contents of the assembly instructions
+
+```bash
+objdump -d executable.o
+```
