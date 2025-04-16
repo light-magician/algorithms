@@ -33,6 +33,13 @@ int main(int argc, char *argv[]) {
   pthread_t p1, p2;
   int rc;
   printf("main: begin (counter = %d)\n", counter);
+  // second arg of pthread_create is attr
+  //      some examples of attributes include
+  //      stack size or scheduling priority
+  // fourth arg is the params to the function
+  //      that is the third param
+  //      it can be passed as a ref to an array
+  //      &args
   pthread_create(&p1, NULL, mythread, "A");
   pthread_create(&p2, NULL, mythread, "B");
   // join waits for the threads to finish
