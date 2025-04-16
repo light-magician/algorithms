@@ -21,3 +21,6 @@ Cargo.lock
 
 # output executables 
 **/*.o 
+
+# .DS_Store
+**/*.DS_Store
