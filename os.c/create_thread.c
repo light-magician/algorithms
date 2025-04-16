@@ -24,6 +24,11 @@ void *mythread(void *str) {
 // take pointer to string and print it
 // a race condition is ullustrated by different
 //      results based on timing of code execution
+// a critical section is a piece of code that
+//      accesses a shared variable (a shared resource)
+// mutual exclusion guarantees that if one thread is
+//      executing within the critical section
+//      the others will be prevented from doing so
 int main(int argc, char *argv[]) {
   pthread_t p1, p2;
   int rc;
